@@ -91,7 +91,6 @@ def runEpisode(env, T, episodeNumber, render = False, randomPolicy = False):
     
     else:
         for t in range(T):
-            observation = np.append(observation, observation[0]*observation[1])
             action = np.argmax(nn.ask([observation]))
                 
             prevObservation = observation
@@ -113,7 +112,7 @@ def runEpisode(env, T, episodeNumber, render = False, randomPolicy = False):
 """
 for e in range(1,NR):
     # Neural Network to store knowledge 
-    nn = NN([3,30,15,3])
+    nn = NN([2,30,15,3])
     
     mean = 0
     maxi = 0
@@ -133,13 +132,13 @@ for e in range(1,NR):
                     bestPolicies = np.concatenate((bestPolicies, res['policy']), axis=0)
                 else:
                     bestPolicies = res['policy']
-                print ("Try {} completed after {} steps. {}/{} successful push policy with random decision boundry.".format(i,res['t'],success,settings.randomNR))
+                print ("Try {} completed after {} steps. {}/{} successful push policy with random decision boundary.".format(i,res['t'],success,settings.randomNR))
             continue
         # train NN after achieve randomNR success
         elif success == settings.randomNR:
             success += 1
-            X =  [ [row[0],row[1],row[0]*row[1]] for row in bestPolicies]
-            Y_ = [ row[2]          for row in bestPolicies]    
+            X =  [ [row[0],row[1] ] for row in bestPolicies]
+            Y_ = [ row[2]           for row in bestPolicies]    
             
             Y = []
             for y in Y_:
@@ -157,7 +156,6 @@ for e in range(1,NR):
                     for k in range (0,len(Xn)):
                         Xn[k][0] += uniform(-settings.maxRandomNoise, settings.maxRandomNoise)
                         Xn[k][1] += uniform(-settings.maxRandomNoise, settings.maxRandomNoise)
-                        Xn[k][2] = Xn[k][0]*Xn[k][1] 
                 else:
                     print ("Train NN {}/{} with successful policies.".format(j,settings.learnN))
                 
@@ -172,7 +170,7 @@ for e in range(1,NR):
             acu = nn.test(X[pAll-pTest:pAll],Y[pAll-pTest:pAll])
             print ("Accuracy",acu)
                 
-            plots.plotPolicyNN(nn,saveToFile="{}_endPolicy".format(filePrefix))
+            plots.plotPolicyNN(nn,saveToFile="{}_endPolicy".format(filePrefix),show=True)
     
 
         res = runEpisode(env, T, i, render=True, randomPolicy=False)
