@@ -18,7 +18,7 @@ def plotPolicyNN(nn,saveToFile="",show=False):
 
     for x in X:
         for y in Y:
-            val = nn.ask([[x,y,x*y]])
+            val = nn.ask([[x,y]])
             a = np.argmax(val)
             P.append([x,y,a])
      
