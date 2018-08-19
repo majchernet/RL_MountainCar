@@ -5,6 +5,48 @@ import settings
 
 
 """
+Plot actions policy stored in the neural network with RGB color
+"""
+def plotRGBPolicyNN(nn,saveToFile="",show=False):
+    plt.figure(figsize=(8, 6), dpi=100)
+    plt.subplot(1, 1, 1)
+    plt.title("Policy defined by neural network")
+    
+    X = np.linspace(settings.pmin, settings.pmax, settings.dS*2, endpoint=True)
+    Y = np.linspace(settings.vmin, settings.vmax, settings.dS*2, endpoint=True)
+    
+    Xp, Yp, Cp = [], [], []
+    
+    for x in X:
+        for y in Y:
+            val = nn.ask([[x,y]])
+            Xp.append(x) 
+            Yp.append(y)
+            Cp.append(val[0].tolist())
+            
+    # Set x limits
+    plt.xlim(settings.pmin, settings.pmax)
+    plt.xlabel('Position')
+    
+    # Set y limits
+    plt.ylim(settings.vmin, settings.vmax)
+    plt.ylabel('Velocity')
+          
+    plt.scatter(Xp, Yp, c=Cp)        
+    
+    if saveToFile:
+        plt.savefig('{}.png'.format(saveToFile))
+    
+    if show:
+        plt.show()
+    
+    plt.clf()
+    plt.cla()
+    plt.close()
+    return
+
+
+"""
 Plot actions policy stored in the neural network
 """
 def plotPolicyNN(nn,saveToFile="",show=False):
@@ -21,7 +63,7 @@ def plotPolicyNN(nn,saveToFile="",show=False):
             val = nn.ask([[x,y]])
             a = np.argmax(val)
             P.append([x,y,a])
-     
+         
     Xleft = [row[0] for row in P if row[2]==0]
     Yleft = [row[1] for row in P if row[2]==0]
     

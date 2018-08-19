@@ -13,10 +13,13 @@ wmax = 0.07
 dS = 40
 
 # Number of success to achieve using random policies before learn neural network 
-randomNR = 100
+randomNR = 50
 
 # Repeating the learning NN process
-learnN = 15
+learnN = 6
 
 # Maximal value of noise adding in each learnig step
 maxRandomNoise = vmax/dS
+
+# Learnig rate for optimalization algoritm
+learningRate = 0.002

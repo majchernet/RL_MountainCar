@@ -8,7 +8,7 @@ class NN:
     # first element of layers is numer of nodes in input layer
     # last element of layers is numer of nodes in output layer
 
-    def __init__(self, layers):
+    def __init__(self, layers, learningRate = 0.001):
         self.sess = tf.Session()
 
         self.inLayer  = layers.pop(0)
@@ -18,7 +18,7 @@ class NN:
         #number of hidden layers
         self.nH = len(self.hiddenLayers)
 
-        self.learning_rate = 0.005
+        self.learningRate = learningRate
 
         self.W = [0] * (self.nH+1)
         self.B = [0] * (self.nH+1)
@@ -44,7 +44,7 @@ class NN:
             if  idx+1 == self.nH: 
                 self.W[idx+1] = tf.Variable(tf.truncated_normal([val, self.outLayer], stddev=1.0))
                 self.B[idx+1] = tf.Variable(tf.zeros(self.outLayer))
-                self.Ylogits  = tf.matmul(self.Y[idx], self.W[idx+1]) + self.B[idx+1]
+                self.Ylogits  = tf.nn.sigmoid(tf.matmul(self.Y[idx], self.W[idx+1]) + self.B[idx+1])
                 break
             # define model for hidden layer
             self.W[idx+1] = tf.Variable(tf.truncated_normal([val, self.hiddenLayers[idx+1]], stddev=1.0))
@@ -52,7 +52,7 @@ class NN:
             self.Y[idx+1] = tf.nn.sigmoid(tf.matmul(self.Y[idx], self.W[idx+1]) + self.B[idx+1])
 
         self.cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.Ylogits, labels=self.Ylabels))
-        self.train_step = tf.train.AdamOptimizer(0.005).minimize(self.cross_entropy)
+        self.train_step = tf.train.AdamOptimizer(self.learningRate).minimize(self.cross_entropy)
         self.sess = tf.InteractiveSession()
         tf.global_variables_initializer().run()
 

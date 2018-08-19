@@ -91,7 +91,9 @@ def runEpisode(env, T, episodeNumber, render = False, randomPolicy = False):
     
     else:
         for t in range(T):
-            action = np.argmax(nn.ask([observation]))
+            a = nn.ask([observation])
+            #print (a)
+            action = np.argmax(a)
                 
             prevObservation = observation
             observation, reward, done, info = env.step(action)
@@ -112,7 +114,7 @@ def runEpisode(env, T, episodeNumber, render = False, randomPolicy = False):
 """
 for e in range(1,NR):
     # Neural Network to store knowledge 
-    nn = NN([2,30,15,3])
+    nn = NN([2,30,15,3], learningRate = settings.learningRate )
     
     mean = 0
     maxi = 0
@@ -166,13 +168,14 @@ for e in range(1,NR):
                     nn.train(Xn[batch:batch+100],Y[batch:batch+100])
                 
                 plots.plotPolicyNN(nn, saveToFile="{}_learn_step_{}".format(filePrefix,j))
+                plots.plotRGBPolicyNN(nn, saveToFile="{}_learn_step_{}_RGB".format(filePrefix,j))
+                
                 
             acu = nn.test(X[pAll-pTest:pAll],Y[pAll-pTest:pAll])
             print ("Accuracy",acu)
                 
             plots.plotPolicyNN(nn,saveToFile="{}_endPolicy".format(filePrefix),show=True)
-    
-
+            
         res = runEpisode(env, T, i, render=True, randomPolicy=False)
         print ("Try {} done after {} steps.".format(i,res['t']))
 
